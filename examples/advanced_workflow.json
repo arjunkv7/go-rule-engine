@@ -1,0 +1,50 @@
+{
+  "id": "workflow-2",
+  "name": "Advanced Condition Examples",
+  "nodes": [
+    {
+      "id": "start-1",
+      "type": "start",
+      "config": {
+        "initialData": {
+          "age": 25,
+          "role": "admin",
+          "score": 85,
+          "isActive": true
+        }
+      }
+    },
+    {
+      "id": "condition-1",
+      "type": "condition",
+      "config": {
+        "lhs": "{{age}}",
+        "operator": ">=",
+        "rhs": "18"
+      },
+      "comment": "Compare variable with literal number"
+    },
+    {
+      "id": "condition-2",
+      "type": "condition",
+      "config": {
+        "lhs": "{{role}}",
+        "operator": "==",
+        "rhs": "admin"
+      },
+      "comment": "Compare variable with literal string"
+    },
+    {
+      "id": "condition-3",
+      "type": "condition",
+      "config": {
+        "lhs": "{{score}}",
+        "operator": ">",
+        "rhs": "80"
+      },
+      "comment": "Greater than comparison"
+    }
+  ],
+  "edges": []
+}
+

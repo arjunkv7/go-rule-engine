@@ -1,0 +1,34 @@
+{
+  "id": "workflow-1",
+  "name": "Age Check Workflow",
+  "nodes": [
+    {
+      "id": "start-1",
+      "type": "start",
+      "config": {
+        "initialData": {
+          "age": 10,
+          "name": "John",
+          "minAge": 18
+        }
+      }
+    },
+    {
+      "id": "condition-1",
+      "type": "condition",
+      "config": {
+        "lhs": "{{age}}",
+        "operator": ">=",
+        "rhs": "{{minAge}}"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "from": "start-1",
+      "to": "condition-1",
+      "output": "default"
+    }
+  ]
+}
+
