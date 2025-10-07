@@ -6,6 +6,8 @@ import (
 	"log"
 	"os"
 	"sync"
+
+	"github.com/gin-gonic/gin"
 )
 
 type Engine struct {
@@ -20,7 +22,7 @@ func NewEngine() *Engine {
 	}
 }
 
-func (e *Engine) LoadWorkflow(filename string) error {
+func (e *Engine) LoadWorkflowFromFile(filename string) error {
 	data, err := os.ReadFile(filename)
 	if err != nil {
 		return fmt.Errorf("failed to read file: %w", err)
@@ -32,6 +34,16 @@ func (e *Engine) LoadWorkflow(filename string) error {
 	}
 	e.Workflow = workflow
 	return nil
+}
+
+func (e *Engine) LoadWorkflowFromPayload(c *gin.Context) error {
+	var workflow Workflow
+
+	if err := c.BindJSON(&workflow); err != nil {
+        return fmt.Errorf("invalid workflow JSON: %w", err)
+    }
+    e.Workflow = workflow
+    return nil
 }
 
 var NodeFactory func(NodeDefinition) (Node, error)
@@ -122,6 +134,7 @@ func (e *Engine) executeNodeParallel(nodeIds []string, ctx *WorkflowContext) err
 		wg.Add(1)
 		go func(id string) {
 			defer wg.Done()
+			log.Printf("Started executing id: %s ", id)
 			err := e.executeNode(id, ctx)
 			if err != nil {
 				log.Printf("Execution error for the node: %s", id)

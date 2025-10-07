@@ -45,6 +45,22 @@
       "comment": "Greater than comparison"
     }
   ],
-  "edges": []
+  "edges": [
+    {
+      "from": "start-1",
+      "to": "condition-1",
+      "output": "default"
+    },
+    {
+      "from": "start-1",
+      "to": "condition-2",
+      "output": "default"
+    },
+    {
+      "from": "condition-1",
+      "to": "condition-3",
+      "output": "true"
+    }
+  ]
 }
 
