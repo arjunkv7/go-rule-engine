@@ -1,21 +1,22 @@
 {
-  "id": "workflow-1",
-  "name": "User Registration Workflow",
+  "id": "workflow-2",
+  "name": "Adult User Registration",
   "nodes": [
     {
       "id": "start-1",
       "type": "start",
       "config": {
         "initialData": {
-          "name": "John Doe",
-          "age": 25,
-          "email": "john@example.com",
+          "name": "Alice Smith",
+          "age": 30,
+          "email": "alice@example.com",
+          "country": "USA",
           "minAge": 18
         }
       }
     },
     {
-      "id": "condition-1",
+      "id": "age-check",
       "type": "condition",
       "config": {
         "lhs": "{{age}}",
@@ -24,17 +25,18 @@
       }
     },
     {
-      "id": "mongo-insert-1",
+      "id": "insert-adult",
       "type": "mongodb_insert",
       "config": {
         "database": "workflow_db",
-        "collection": "users",
+        "collection": "adult_users",
         "document": {
           "name": "{{name}}",
           "age": "{{age}}",
           "email": "{{email}}",
-          "status": "active",
-          "registeredAt": "2025-10-07"
+          "country": "{{country}}",
+          "accountType": "full",
+          "createdAt": "2025-10-07T10:30:00Z"
         }
       }
     }
@@ -42,13 +44,14 @@
   "edges": [
     {
       "from": "start-1",
-      "to": "condition-1",
+      "to": "age-check",
       "output": "default"
     },
     {
-      "from": "condition-1",
-      "to": "mongo-insert-1",
+      "from": "age-check",
+      "to": "insert-adult",
       "output": "true"
     }
   ]
 }
+

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/arjun/go-workflow-engine/workflow"
 	"github.com/arjun/go-workflow-engine/workflow/nodes"
@@ -13,10 +14,31 @@ import (
 func main() {
 	fmt.Println("Go Workflow Engine")
 
+	// Set up node factory
 	workflow.NodeFactory = nodes.CreateNode
+
+	// Initialize MongoDB
+	mongoURI := os.Getenv("MONGO_URI")
+	if mongoURI == "" {
+		mongoURI = "mongodb://localhost:27017"
+	}
+
+	log.Printf("Connecting to MongoDB: %s", mongoURI)
+	if err := nodes.InitMongoDB(mongoURI); err != nil {
+		log.Fatalf("Failed to connect to MongoDB: %v", err)
+	}
 
 	router := gin.Default()
 
+	// Health check endpoint
+	router.GET("/health", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"status":  "healthy",
+			"message": "Workflow engine is running",
+		})
+	})
+
+	// Execute workflow endpoint
 	router.POST("/execute-workflow", executeWorkflowHandler)
 
 	// Start server
