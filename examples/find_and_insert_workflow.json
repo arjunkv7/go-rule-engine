@@ -1,0 +1,74 @@
+{
+  "id": "workflow-3",
+  "name": "Find Users and Insert Report",
+  "nodes": [
+    {
+      "id": "start-1",
+      "type": "start",
+      "config": {
+        "initialData": {
+          "minAge": 18,
+          "country": "USA"
+        }
+      }
+    },
+    {
+      "id": "find-users",
+      "type": "mongodb_find",
+      "config": {
+        "database": "workflow_db",
+        "collection": "users",
+        "filter": {
+          "age": "{{minAge}}",
+          "country": "{{country}}"
+        },
+        "limit": 5,
+        "outputKey": "foundUsers"
+      }
+    },
+    {
+      "id": "check-results",
+      "type": "condition",
+      "config": {
+        "lhs": "{{foundUsersCount}}",
+        "operator": ">",
+        "rhs": "0"
+      }
+    },
+    {
+      "id": "insert-report",
+      "type": "mongodb_insert",
+      "config": {
+        "database": "workflow_db",
+        "collection": "reports",
+        "document": {
+          "reportType": "user_search",
+          "searchCriteria": {
+            "minAge": "{{minAge}}",
+            "country": "{{country}}"
+          },
+          "totalFound": "{{foundUsersCount}}",
+          "timestamp": "2025-10-07T12:00:00Z"
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "from": "start-1",
+      "to": "find-users",
+      "output": "default"
+    },
+    {
+      "from": "find-users",
+      "to": "check-results",
+      "output": "default"
+    },
+    {
+      "from": "check-results",
+      "to": "insert-report",
+      "output": "true"
+    }
+  ]
+}
+

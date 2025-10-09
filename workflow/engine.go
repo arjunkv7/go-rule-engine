@@ -13,6 +13,7 @@ import (
 type Engine struct {
 	Workflow Workflow
 	Nodes    map[string]Node
+	Context  *WorkflowContext
 }
 
 func NewEngine() *Engine {
@@ -61,6 +62,7 @@ func (e *Engine) BuildNodes() error {
 
 func (e *Engine) Execute() error {
 	ctx := NewWorkflowContext(nil)
+	e.Context = ctx
 	startNode := e.findStartNode()
 	if startNode == nil {
 		return fmt.Errorf("no start node found")

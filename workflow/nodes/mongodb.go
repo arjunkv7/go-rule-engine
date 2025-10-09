@@ -33,7 +33,7 @@ func InitMongoDB(connectionString string) error {
 	return nil
 }
 
-func resolveMapValues(data map[string]interface{}, ctx map[string]interface{}) (map[string]interface{}, error) {
+func ResolveMapValues(data map[string]interface{}, ctx map[string]interface{}) (map[string]interface{}, error) {
 	result := make(map[string]interface{})
 
 	for key, value := range data {
@@ -60,7 +60,7 @@ func resolveMapValues(data map[string]interface{}, ctx map[string]interface{}) (
 			}
 		} else if nestedMap, isMap := value.(map[string]interface{}); isMap {
 			// It's a nested map, resolve recursively
-			resolvedNested, err := resolveMapValues(nestedMap, ctx)
+			resolvedNested, err := ResolveMapValues(nestedMap, ctx)
 			if err != nil {
 				return nil, err
 			}

@@ -87,5 +87,6 @@ func executeWorkflowHandler(c *gin.Context) {
 		"message":       "Workflow executed successfully",
 		"workflow_id":   engine.Workflow.ID,
 		"workflow_name": engine.Workflow.Name,
+		"data":          engine.Context,
 	})
 }

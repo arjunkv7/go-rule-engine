@@ -14,6 +14,8 @@ func CreateNode(def workflow.NodeDefinition) (workflow.Node, error) {
 		return NewConditionNode(def)
 	case "mongodb_insert":
 		return NewMongoDBInsertNode(def)
+	case "mongodb_find":
+		return NewMongoDBFindNode(def)
 
 	default:
 		return nil, fmt.Errorf("unknown node type: %s", def.Type)

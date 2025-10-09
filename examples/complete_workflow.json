@@ -1,0 +1,110 @@
+{
+  "id": "workflow-5",
+  "name": "Complete User Registration and Search",
+  "description": "Registers a user, then searches for similar users",
+  "nodes": [
+    {
+      "id": "start",
+      "type": "start",
+      "config": {
+        "initialData": {
+          "name": "Bob Johnson",
+          "age": 28,
+          "email": "bob@example.com",
+          "country": "USA",
+          "minAge": 18
+        }
+      }
+    },
+    {
+      "id": "check-age",
+      "type": "condition",
+      "config": {
+        "lhs": "{{age}}",
+        "operator": ">=",
+        "rhs": "{{minAge}}"
+      }
+    },
+    {
+      "id": "register-user",
+      "type": "mongodb_insert",
+      "config": {
+        "database": "workflow_db",
+        "collection": "users",
+        "document": {
+          "name": "{{name}}",
+          "age": "{{age}}",
+          "email": "{{email}}",
+          "country": "{{country}}",
+          "status": "active",
+          "registeredAt": "2025-10-07T14:30:00Z"
+        }
+      }
+    },
+    {
+      "id": "find-similar-users",
+      "type": "mongodb_find",
+      "config": {
+        "database": "workflow_db",
+        "collection": "users",
+        "filter": {
+          "country": "{{country}}",
+          "status": "active"
+        },
+        "limit": 10,
+        "outputKey": "similarUsers"
+      }
+    },
+    {
+      "id": "check-similar-count",
+      "type": "condition",
+      "config": {
+        "lhs": "{{similarUsersCount}}",
+        "operator": ">",
+        "rhs": "1"
+      }
+    },
+    {
+      "id": "create-notification",
+      "type": "mongodb_insert",
+      "config": {
+        "database": "workflow_db",
+        "collection": "notifications",
+        "document": {
+          "userId": "{{insertedID}}",
+          "message": "Welcome! You joined a community with similar users.",
+          "similarUsersCount": "{{similarUsersCount}}",
+          "createdAt": "2025-10-07T14:31:00Z"
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "from": "start",
+      "to": "check-age",
+      "output": "default"
+    },
+    {
+      "from": "check-age",
+      "to": "register-user",
+      "output": "true"
+    },
+    {
+      "from": "register-user",
+      "to": "find-similar-users",
+      "output": "default"
+    },
+    {
+      "from": "find-similar-users",
+      "to": "check-similar-count",
+      "output": "default"
+    },
+    {
+      "from": "check-similar-count",
+      "to": "create-notification",
+      "output": "true"
+    }
+  ]
+}
+

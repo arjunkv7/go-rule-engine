@@ -43,7 +43,7 @@ func NewMongoDBInsertNode(def workflow.NodeDefinition) (*MongoDBInsertNode, erro
 }
 
 func (n *MongoDBInsertNode) Execute(ctx map[string]interface{}) (workflow.NodeResult, error) {
-	resolvedDoc, err := resolveMapValues(n.Document, ctx)
+	resolvedDoc, err := ResolveMapValues(n.Document, ctx)
 	if err != nil {
 		return workflow.NodeResult{}, fmt.Errorf("failed to resolve document values: %w", err)
 	}

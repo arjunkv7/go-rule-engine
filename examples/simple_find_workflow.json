@@ -1,0 +1,36 @@
+{
+  "id": "workflow-4",
+  "name": "Simple Find Users",
+  "nodes": [
+    {
+      "id": "start-1",
+      "type": "start",
+      "config": {
+        "initialData": {
+          "searchAge": 25
+        }
+      }
+    },
+    {
+      "id": "find-users",
+      "type": "mongodb_find",
+      "config": {
+        "database": "workflow_db",
+        "collection": "users",
+        "filter": {
+          "age": "{{searchAge}}"
+        },
+        "limit": 10,
+        "outputKey": "matchedUsers"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "from": "start-1",
+      "to": "find-users",
+      "output": "default"
+    }
+  ]
+}
+
