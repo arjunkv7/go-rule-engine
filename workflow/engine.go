@@ -99,7 +99,7 @@ func (e *Engine) executeNode(nodeId string, ctx *WorkflowContext) error {
 		ctx.Set(key, value)
 	}
 
-	log.Printf("Context after node %s: %v", nodeId, ctx.GetAll())
+	// log.Printf("Context after node %s: %v", nodeId, ctx.GetAll())
 
 	nextNodes := e.findNextNodes(nodeId, response.Output)
 
