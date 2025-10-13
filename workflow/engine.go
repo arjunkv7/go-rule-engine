@@ -60,8 +60,8 @@ func (e *Engine) BuildNodes() error {
 	return nil
 }
 
-func (e *Engine) Execute() error {
-	ctx := NewWorkflowContext(nil)
+func (e *Engine) Execute(inputData map[string]interface{}) error {
+	ctx := NewWorkflowContext(inputData)
 	e.Context = ctx
 	startNode := e.findStartNode()
 	if startNode == nil {
