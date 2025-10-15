@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Go Workflow Engine - Visual Builder</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <h1>🚀 Go Workflow Engine</h1>
+                <p>Visual Workflow Builder</p>
+            </div>
+            <div class="header-right">
+                <button id="clearBtn" class="btn btn-secondary">Clear All</button>
+                <button id="loadBtn" class="btn btn-primary">📂 Load JSON</button>
+                <button id="saveBtn" class="btn btn-primary">💾 Save to DB</button>
+                <button id="exportBtn" class="btn btn-primary">Export JSON</button>
+                <button id="executeBtn" class="btn btn-success">Execute Workflow</button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <h3>Node Types</h3>
+                <div class="node-palette">
+                    <div class="palette-node" draggable="true" data-type="start">
+                        <div class="node-icon">▶️</div>
+                        <div class="node-info">
+                            <strong>Start</strong>
+                            <small>Entry point</small>
+                        </div>
+                    </div>
+                    <div class="palette-node" draggable="true" data-type="condition">
+                        <div class="node-icon">❓</div>
+                        <div class="node-info">
+                            <strong>Condition</strong>
+                            <small>If/else logic</small>
+                        </div>
+                    </div>
+                    <div class="palette-node" draggable="true" data-type="mongodb_insert">
+                        <div class="node-icon">💾</div>
+                        <div class="node-info">
+                            <strong>MongoDB Insert</strong>
+                            <small>Insert document</small>
+                        </div>
+                    </div>
+                    <div class="palette-node" draggable="true" data-type="mongodb_find">
+                        <div class="node-icon">🔍</div>
+                        <div class="node-info">
+                            <strong>MongoDB Find</strong>
+                            <small>Query documents</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="workflow-info">
+                    <h3>Workflow Info</h3>
+                    <div class="form-group">
+                        <label>Workflow ID</label>
+                        <input type="text" id="workflowId" placeholder="workflow-1" value="workflow-1">
+                    </div>
+                    <div class="form-group">
+                        <label>Workflow Name</label>
+                        <input type="text" id="workflowName" placeholder="My Workflow" value="My Workflow">
+                    </div>
+                    <div class="stats">
+                        <div class="stat-item">
+                            <strong id="nodeCount">0</strong>
+                            <span>Nodes</span>
+                        </div>
+                        <div class="stat-item">
+                            <strong id="edgeCount">0</strong>
+                            <span>Edges</span>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Canvas -->
+            <div class="canvas-container">
+                <div id="canvas" class="canvas">
+                    <svg id="edgesSvg" class="edges-svg"></svg>
+                    <div class="canvas-hint">
+                        <h2>👈 Drag nodes from the left panel to start building</h2>
+                        <p>Click nodes to configure them</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Properties Panel -->
+            <aside class="properties-panel" id="propertiesPanel">
+                <div class="panel-header">
+                    <h3>Node Properties</h3>
+                    <button id="closePropertiesBtn" class="btn-close">×</button>
+                </div>
+                <div class="panel-content" id="propertiesContent">
+                    <p class="hint">Select a node to edit its properties</p>
+                </div>
+                <div class="panel-footer">
+                    <button id="deleteNodeBtn" class="btn btn-danger">Delete Node</button>
+                    <button id="savePropertiesBtn" class="btn btn-primary">Save</button>
+                </div>
+            </aside>
+        </div>
+
+        <!-- JSON Modal -->
+        <div id="jsonModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Workflow JSON</h2>
+                    <button class="modal-close" onclick="closeModal()">×</button>
+                </div>
+                <div class="modal-body">
+                    <textarea id="jsonOutput" readonly></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+                    <button class="btn btn-primary" onclick="copyJSON()">Copy to Clipboard</button>
+                    <button class="btn btn-success" onclick="downloadJSON()">Download JSON</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Result Modal -->
+        <div id="resultModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Execution Result</h2>
+                    <button class="modal-close" onclick="closeResultModal()">×</button>
+                </div>
+                <div class="modal-body">
+                    <pre id="resultOutput"></pre>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" onclick="closeResultModal()">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Load JSON Modal -->
+        <div id="loadModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Load Workflow JSON</h2>
+                    <button class="modal-close" onclick="closeLoadModal()">×</button>
+                </div>
+                <div class="modal-body">
+                    <p style="color: #718096; margin-bottom: 1rem;">
+                        Paste your workflow JSON below or upload a file:
+                    </p>
+                    <div style="margin-bottom: 1rem;">
+                        <input type="file" id="jsonFileInput" accept=".json" style="display: none;">
+                        <button class="btn btn-secondary" onclick="document.getElementById('jsonFileInput').click()">
+                            📁 Choose File
+                        </button>
+                        <span id="fileName" style="margin-left: 1rem; color: #718096;"></span>
+                    </div>
+                    <textarea id="jsonInput" placeholder='{"id": "workflow-1", "name": "My Workflow", "nodes": [...], "edges": [...]}'></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeLoadModal()">Cancel</button>
+                    <button class="btn btn-success" onclick="loadWorkflowJSON()">Load Workflow</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
+

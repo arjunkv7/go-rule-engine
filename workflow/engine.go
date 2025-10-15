@@ -102,6 +102,8 @@ func (e *Engine) executeNode(nodeId string, ctx *WorkflowContext) error {
 	// log.Printf("Context after node %s: %v", nodeId, ctx.GetAll())
 
 	nextNodes := e.findNextNodes(nodeId, response.Output)
+	log.Printf("Next nodes: %v", nextNodes)
+	log.Printf("Response: %v", response.Output)
 
 	if len(nextNodes) == 0 {
 		log.Printf("No more nodes to execute. Workflow complete")
@@ -139,7 +141,7 @@ func (e *Engine) executeNodeParallel(nodeIds []string, ctx *WorkflowContext) err
 			log.Printf("Started executing id: %s ", id)
 			err := e.executeNode(id, ctx)
 			if err != nil {
-				log.Printf("Execution error for the node: %s", id)
+				log.Printf("Execution error for the node: %s, %v", id, err)
 				errChan <- err
 			}
 		}(nodeId)
